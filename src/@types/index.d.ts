@@ -20,3 +20,6 @@ declare global {
 }
 
 export {};
+
+export class ModalType {
+}

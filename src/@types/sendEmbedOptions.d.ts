@@ -2,7 +2,7 @@ import {
     ActionRowComponent,
     ActionRowComponentOptions,
     APIEmbed,
-    CommandInteraction,
+    CommandInteraction, ModalSubmitInteraction,
     TextBasedChannel,
     User,
 } from 'discord.js';

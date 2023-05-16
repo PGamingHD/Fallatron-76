@@ -10,6 +10,7 @@ import glob from 'glob';
 import { promisify } from 'util';
 import { Event } from './Event';
 import { RegisterCommandsOptions, CommandType, MenuType } from '../@types';
+import {ModalType} from '../@types/Command'
 import path from 'path';
 import logger from '../utils/logger';
 import { hasUpperCase } from "../utils/misc";
@@ -19,9 +20,10 @@ const globPromise = promisify(glob);
 export class ExtendedClient extends Client {
     commands: Collection<string, CommandType> = new Collection();
     contextmenus: Collection<string, MenuType> = new Collection();
+    modals: Collection<string, ModalType> = new Collection();
 
     constructor() {
-        super({ intents: 519, waitGuildTimeout: 1000 });
+        super({ intents: 37379, waitGuildTimeout: 1000 });
     }
 
     start() {
@@ -48,6 +50,7 @@ export class ExtendedClient extends Client {
 
         const root = path.join(__dirname, '..');
         const commandFiles = await globPromise('/commands/*/*{.ts,.js}', {root});
+        const modalFiles = await globPromise('/modals/*/*{.ts,.js}', {root});
 
         for (const filePath of commandFiles) {
             const command: CommandType | MenuType = await this.importFile(filePath);
@@ -73,6 +76,13 @@ export class ExtendedClient extends Client {
             } else {
                 this.contextmenus.set(command.name, command as MenuType);
             }
+        }
+
+        for (const filePath of modalFiles) {
+            const modal: ModalType = await this.importFile(filePath);
+            if (!modal.customId) continue;
+
+            this.modals.set(modal.customId, modal as ModalType);
         }
 
         this.on('ready', () => {

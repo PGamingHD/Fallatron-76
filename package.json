@@ -1,25 +1,27 @@
 {
-  "name": "DiscordTS-Template",
+  "name": "fallotron-76",
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
   "scripts": {
     "start": "ts-node src/bot.ts",
     "start:dev": "ts-node-dev src/index.ts",
-    "start:production": "node dist/index.js",
+    "start:production": "tsc && node dist/index.js",
     "build": "tsc",
     "fix": "gts fix"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/node": "^18.16.3",
+    "@types/uuid": "^9.0.1",
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@prisma/client": "^4.13.0",
+    "@prisma/client": "^4.14.0",
+    "argon2": "^0.30.3",
     "axios": "^1.4.0",
     "chalk": "^4.0.0",
-    "discord.js": "^14.9.0",
+    "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
     "form-data": "^4.0.0",
     "glob": "^7.2.3",
@@ -29,6 +31,7 @@
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "tslib": "^2.5.0",
+    "uuid": "^9.0.0",
     "winston": "^3.8.2",
     "winston-loki": "^6.0.6"
   }

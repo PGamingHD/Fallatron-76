@@ -1,4 +1,7 @@
-import { CommandInteraction, Message } from 'discord.js';
+import {
+    CommandInteraction,
+    Message
+} from 'discord.js';
 import { Colours } from '../../@types/Colours';
 import sendEmbed from './sendEmbed';
 

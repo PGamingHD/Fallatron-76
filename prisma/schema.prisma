@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,7 +7,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  id          String     @id @unique @db.VarChar(32)
-  username    String
+model user {
+  id          String       @id @unique @db.VarChar(40)
+  userid      String       @db.VarChar(20)
+  username    String       @unique @db.VarChar(32)
+  password    String       @db.VarChar(250)
+  loggedin    Boolean      @default(false)
+  loggedinid  String?      @db.VarChar(20)
+  useraccount useraccount?
+}
+
+model useraccount {
+  owner user        @relation(fields: [id], references: [id])
+  id    String      @id @unique @db.VarChar(40)
+  type  AccountType @default(USER)
+}
+
+model Order {
+  id        String      @id @unique @db.VarChar(40)
+  userid    String      @db.VarChar(25)
+  todo      String      @db.VarChar(250)
+  status    OrderStatus @default(PENDING)
+  access    String?     @db.VarChar(25)
+  createdAt DateTime    @default(now())
+  orderId   Int         @default(1)
+  user      String      @default("username")
+  pass      String      @default("password")
+  openTimes Int?        @db.Int()
+}
+
+enum OrderStatus {
+  PENDING
+  CANCELLED
+  COMPLETED
+}
+
+enum AccountType {
+  OWNER
+  MANAGER
+  WORKER
+  USER
 }
