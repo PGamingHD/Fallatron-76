@@ -31,6 +31,7 @@ model Order {
   access    String?     @db.VarChar(25)
   createdAt DateTime    @default(now())
   orderId   Int         @default(1)
+  username  String      @db.VarChar(32)
   user      String      @default("username")
   pass      String      @default("password")
   openTimes Int?        @db.Int()

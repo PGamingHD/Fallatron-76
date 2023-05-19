@@ -137,7 +137,7 @@ export default new Command({
                         new EmbedBuilder()
                             .setColor(Colours.GREEN)
                             .setTitle(`Order: ${orderData.id}`)
-                            .setDescription(`\`\`\`ID: ${orderData.id}\nUserID: ${orderData.userid}\nStatus: ${orderData.status}\nCreated At: ${orderData.createdAt}\nOrder Worker: ${orderData.access === null ? "Not assigned" : orderData.access}\nCredentials Accessed: ${orderData.openTimes} times\n\nAccount Username: ${orderData.user}\nAccount Password: ${orderData.pass}\`\`\`\n\n**Todo:**\n\`\`\`${orderData.todo}\`\`\``)
+                            .setDescription(`\`\`\`ID: ${orderData.id}\nUsername: ${orderData.username} (${orderData.userid})\nStatus: ${orderData.status}\nCreated At: ${orderData.createdAt}\nOrder Worker: ${orderData.access === null ? "Not assigned" : orderData.access}\nCredentials Accessed: ${orderData.openTimes === null ? '0' : orderData.openTimes} times\n\nAccount Username: ${orderData.user}\nAccount Password: ${orderData.pass}\`\`\`\n\n**Todo:**\n\`\`\`${orderData.todo}\`\`\``)
                     ],
                     components: [buttonRow]
                 });

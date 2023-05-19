@@ -1,5 +1,5 @@
-import {Events} from "discord.js";
-import {ExtendedClient} from './structures/Client';
+import { Events } from "discord.js";
+import { ExtendedClient } from './structures/Client';
 import logger from './utils/logger';
 require("dotenv").config();
 

@@ -22,7 +22,7 @@ export class Database {
         return this.prisma.useraccount.create({data});
     }
 
-    registerNewOrder(id: string, userid: string, user: string, pass: string, orderId: number, todo: string) {
+    registerNewOrder(id: string, userid: string, user: string, pass: string, orderId: number, todo: string, username: string) {
         return this.prisma.order.create({
             data: {
                 id,
@@ -30,7 +30,8 @@ export class Database {
                 user,
                 pass,
                 orderId,
-                todo
+                todo,
+                username
             }
         });
     }
@@ -90,6 +91,23 @@ export class Database {
         })
     }
 
+    GetAllOrders(): Promise<Order[]> {
+        return this.prisma.order.findMany({
+            where: {
+                status: 'PENDING',
+                access: null,
+            },
+            orderBy: [
+                {
+                    userid: 'asc'
+                },
+                {
+                    orderId: 'asc'
+                },
+            ],
+        })
+    }
+
     findAllOrders(access: string): Promise<Order[]> {
         return this.prisma.order.findMany({
             where: {
@@ -104,7 +122,6 @@ export class Database {
                     orderId: 'asc'
                 },
             ],
-
         })
     }
 

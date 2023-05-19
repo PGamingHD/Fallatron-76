@@ -29,19 +29,17 @@ export default new Command({
 
         if (!username) return;
 
-        const user: user | null = await db.findLoggedIn(interaction.user.id as string);
+        const user: any = await db.findLoggedIn(interaction.user.id as string);
 
         if (!user) return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('You do not seem to be logged in, please login before using this command.')]});
 
-        const target: any = await db.findUsername(username);
+        const target: any = await db.findUsername(username.toLowerCase());
 
         if (!target) return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('The username inserted does not exist, is it a valid account?')]});
 
-        const {useraccount} = target;
+        if (user.useraccount.type !== "MANAGER" && user.useraccount.type !== "OWNER") return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('You do not have access to this command, you require the permission \`MANAGER+\` to execute this command.')]})
 
-        if (useraccount.type !== "MANAGER" && useraccount.type !== "OWNER") return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('You do not have access to this command, you require the permission \`MANAGER+\` to execute this command.')]})
-
-        await db.updateUserType(target.id, "MANAGER");
+        await db.updateUserType(target.id, "WORKER");
 
         return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.GREEN).setDescription('You successfully set the user to \`WORKER\` permissions.')]});
     },

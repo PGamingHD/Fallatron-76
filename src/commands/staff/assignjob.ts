@@ -1,13 +1,21 @@
 import {
+    ActionRowBuilder,
+    AnyComponentBuilder,
     APIEmbed,
     ApplicationCommandOptionType,
-    ButtonStyle,
+    ButtonStyle, CacheType,
     ChannelType,
     ComponentType,
     EmbedBuilder,
     Guild,
     GuildBasedChannel,
+    GuildMember,
     GuildTextBasedChannel,
+    InteractionCollector,
+    InteractionResponse,
+    Message, ModalBuilder,
+    StringSelectMenuBuilder, StringSelectMenuInteraction,
+    StringSelectMenuOptionBuilder, TextInputBuilder,
     TextInputStyle
 } from 'discord.js';
 import { Command } from '../../structures/Command';
@@ -19,56 +27,79 @@ export default new Command({
     name: 'assignjob',
     description: 'Assign a job to a specific worker, manager or owner',
     modalCommand: true,
-    options: [
-        {
-            type: ApplicationCommandOptionType.String,
-            name: 'username',
-            description: 'Registered username',
-            required: true,
-        },
-        {
-            type: ApplicationCommandOptionType.String,
-            name: 'jobid',
-            description: 'The Job ID',
-            required: true
-        }
-    ],
     run: async ({ interaction, client }) => {
         if (!interaction.guild) return;
         const user: any = await db.findLoggedIn(interaction.user.id as string);
         if (!user) return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('You do not seem to be logged in, please login before using this command.')]});
 
-        const username: string | null = interaction.options.getString('username');
-
-        if (!username) return;
-
         const {useraccount} = user;
 
-        if (useraccount.type !== "OWNER") return interaction.followUp({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('You do not have access to this command, you require the permission \`OWNER\` to execute this command.')]})
+        if (useraccount.type !== "OWNER") return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('You do not have access to this command, you require the permission \`OWNER\` to execute this command.')]})
 
-        const target: any = await db.findUsername(username);
+        const AllOrders: Order[] = await db.GetAllOrders();
 
-        if (!target) return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('The user chosen for a job does not seem to be valid.')]})
-        if (target.useraccount.type !== "WORKER" && target.useraccount.type !== "MANAGER" && target.useraccount.type !== "OWNER") return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('The user chosen does not seem to be of rank Worker+')]});
+        if (AllOrders.length === 0) return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('There are no jobs available to assign at the moment.')]})
 
-        const jobid: string | null = interaction.options.getString('jobid');
+        let options: any[] = [];
+        for (let order of AllOrders) {
+            let target = null;
 
-        if (!jobid) return;
+            const guild: Guild = await client.guilds.fetch(process.env.MAIN_GUILD as string);
+            try {
+                const test: GuildMember = await guild.members.fetch(order.userid);
 
-        const job: Order | null = await db.findOrder(jobid);
+                if (test) target = test;
+            } catch {}
 
-        if (!job) return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('The specified job does not exist, is the JOB ID correct?')]})
+            if (!target) continue;
 
-        if (job.access) return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('The specific job has already been claimed, please use the /reassignjob command.')]})
-
-        const logGuild: Guild = await client.guilds.fetch(process.env.LOG_GUILD as string);
-        const logChannel: GuildBasedChannel | null =  await logGuild.channels.fetch(process.env.LOG_CHANNEL as string) as GuildTextBasedChannel;
-        if (logChannel) {
-            await logChannel.send({embeds: [new EmbedBuilder().setColor(Colours.YELLOW).setTitle('⚙️ New job assigned ⚙️').setDescription(`The job \`${jobid}\` has been assigned to user ${target.username} by user ${interaction.user}`)]});
+            options.push(
+                new StringSelectMenuOptionBuilder()
+                    .setLabel(`${target.user.username} #${order.orderId}`)
+                    .setDescription(`ID: ${order.id}`)
+                    .setValue(`${order.userid}#${order.orderId}`)
+            )
         }
 
-        await db.updateOrderAccess(job.id, target.userid);
+        const menu: StringSelectMenuBuilder = new StringSelectMenuBuilder()
+            .setCustomId('main')
+            .setPlaceholder('Choose a job to assign to a worker!')
+            .addOptions(options)
 
-        return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.GREEN).setDescription(`You have successfully set the user with job \`${jobid}\`!`)]});
+        const row: ActionRowBuilder<AnyComponentBuilder> = new ActionRowBuilder().addComponents(menu);
+        //@ts-ignore
+        const int: Message<boolean> & InteractionResponse<boolean> =  await interaction.reply({content: 'These are your currently ongoing jobs!', components: [row], ephemeral: true});
+
+        const collector: InteractionCollector<StringSelectMenuInteraction<CacheType>> = await int.createMessageComponentCollector({
+            componentType: ComponentType.SelectMenu,
+            time: 120000,
+            idle: 60000
+        });
+
+        collector.on('collect', async (data: StringSelectMenuInteraction<CacheType>): Promise<void> => {
+            const splitUp: string[] = data.values[0].split('#');
+            const orderData: Order | null = await db.findSpecificOrder(splitUp[0], parseInt(splitUp[1]));
+
+            if (orderData) {
+                const modal: ModalBuilder = new ModalBuilder().setCustomId('assignModal').setTitle('Assign job to worker');
+
+                const haveComponent: TextInputBuilder = new TextInputBuilder().setCustomId('assignUser').setLabel('Enter worker username').setStyle(TextInputStyle.Short).setMaxLength(32).setMinLength(4).setRequired(true);
+                const hasComponent: TextInputBuilder = new TextInputBuilder().setCustomId('assignJob').setLabel('Job ID (DO NOT TOUCH)').setValue(orderData.id).setStyle(TextInputStyle.Short).setMaxLength(40).setMinLength(36).setRequired(true);
+
+                const firstActionRow: ActionRowBuilder<AnyComponentBuilder> = new ActionRowBuilder().addComponents(haveComponent);
+                const secondActionRow: ActionRowBuilder<AnyComponentBuilder> = new ActionRowBuilder().addComponents(hasComponent);
+
+                //@ts-ignore
+                modal.addComponents(firstActionRow, secondActionRow);
+
+                return data.showModal(modal);
+            }
+        });
+
+        collector.on('end',  async(): Promise<void> => {
+            await int.edit({content: 'Ended, the collector was ended!', components: []});
+        });
+
+        return;
     },
 });

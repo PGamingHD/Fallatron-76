@@ -17,6 +17,6 @@
     "allowSyntheticDefaultImports": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "enviroment.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "enviroment.d.ts"],
   "exclude": ["node_modules"]
 }

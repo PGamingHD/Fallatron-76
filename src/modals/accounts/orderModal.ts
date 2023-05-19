@@ -40,7 +40,7 @@ export default new Modal({
             nextId = latest[0].orderId + 1;
         }
 
-        await db.registerNewOrder(uuidv4(), uid, username, password, nextId, todo);
+        await db.registerNewOrder(uuidv4(), uid, username, password, nextId, todo, findAcc.username);
 
         return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.GREEN).setDescription('You have successfully inserted the order data into the database.')]});
     },

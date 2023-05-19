@@ -94,8 +94,8 @@ export class ExtendedClient extends Client {
                 guildId: process.env.guildId,
             });
             this.user?.setActivity({
-                type: ActivityType.Watching,
-                name: 'In Development',
+                type: ActivityType.Playing,
+                name: '- Protect protocall',
             });
         });
 

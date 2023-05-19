@@ -15,6 +15,10 @@ export default new Modal({
     run: async ({interaction, client, args}) => {
         if (!interaction.guild) return;
 
+        const hasAccount: user | null = await db.findUserId(interaction.user.id);
+
+        if (hasAccount) return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('You already seem to have an registered account, forgot password / username? Please ask the staff for support!')]})
+
         const username: string = args.getTextInputValue('userText');
         const password: string = args.getTextInputValue('passText');
 
@@ -30,7 +34,7 @@ export default new Modal({
 
         const usernameExists: user | null = await db.validateUsername(username.toLowerCase());
 
-        if (usernameExists) return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('THe chosen username has already been taken, please choose another one!')]})
+        if (usernameExists) return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('The chosen username has already been taken, please choose another one!')]})
 
         if (passwordType === 'weak') return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription('Your password is too weak, please enter atleast 6 characters, atleast 1 uppercase letter & atleast 1 digit & a special character.')]})
 
