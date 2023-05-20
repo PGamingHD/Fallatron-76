@@ -31,7 +31,7 @@ import db from "../../utils/database";
 export default new Command({
     name: 'getjobs',
     description: 'Get your own personal jobs that has been assigned to you',
-    modalCommand: true,
+    noDefer: true,
     run: async ({ interaction, client }) => {
         if (!interaction.guild) return;
         const user: any = await db.findLoggedIn(interaction.user.id as string);

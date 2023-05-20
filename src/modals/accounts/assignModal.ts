@@ -12,7 +12,6 @@ import db from "../../utils/database";
 
 export default new Modal({
     customId: 'assignModal',
-
     run: async ({interaction, client, args}) => {
         const username: string = args.getTextInputValue('assignUser');
         const jobId: string = args.getTextInputValue('assignJob');

@@ -13,7 +13,7 @@ import { Command } from '../../structures/Command';
 export default new Command({
     name: 'login',
     description: 'Login to an existing services account',
-    modalCommand: true,
+    noDefer: true,
     run: async ({ interaction, client }) => {
         const modal: ModalBuilder = new ModalBuilder().setCustomId('loginModal').setTitle('Login to Account');
 

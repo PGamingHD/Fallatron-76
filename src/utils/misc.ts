@@ -1,3 +1,5 @@
+import logger from "./logger";
+
 export function generateErrorID(): string {
     return (Math.random() + 1).toString(36).substring(3);
 }
@@ -23,6 +25,14 @@ export function formatSeconds(seconds: number) {
     if (seconds >= 1) time.push(`${secs}s`);
 
     return time.join(' ');
+}
+
+export function escapeRegex(str: string) {
+    try {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, `\\$&`);
+    } catch (e) {
+        return logger.error(e);
+    }
 }
 
 export function hasUpperCase(str: string) {

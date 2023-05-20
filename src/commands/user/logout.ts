@@ -13,7 +13,7 @@ import {user} from "@prisma/client";
 export default new Command({
     name: 'logout',
     description: 'Logout from your account',
-    modalCommand: true,
+    noDefer: true,
     run: async ({ interaction, client }) => {
         const loggedIn: user | null = await db.findLoggedIn(interaction.user.id);
 

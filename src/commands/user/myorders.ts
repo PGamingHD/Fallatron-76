@@ -32,7 +32,7 @@ import {Order, user} from "@prisma/client";
 export default new Command({
     name: 'myorders',
     description: 'Get all your ongoing orders',
-    modalCommand: true,
+    noDefer: true,
     run: async ({ interaction, client }) => {
         const loggedIn: user | null = await db.findLoggedIn(interaction.user.id);
 

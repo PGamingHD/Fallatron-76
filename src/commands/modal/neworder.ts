@@ -16,7 +16,7 @@ import {Colours} from "../../@types/Colours";
 export default new Command({
     name: 'neworder',
     description: 'Add a new order to someone',
-    modalCommand: true,
+    noDefer: true,
     run: async ({ interaction, client }) => {
         const user: any = await db.findLoggedIn(interaction.user.id as string);
 

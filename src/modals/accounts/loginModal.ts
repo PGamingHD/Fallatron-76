@@ -11,7 +11,6 @@ import * as argon2 from 'argon2';
 
 export default new Modal({
     customId: 'loginModal',
-
     run: async ({interaction, client, args}) => {
         const username: string = args.getTextInputValue('loginUser');
         const password: string = args.getTextInputValue('loginPass');

@@ -26,7 +26,7 @@ import db from "../../utils/database";
 export default new Command({
     name: 'assignjob',
     description: 'Assign a job to a specific worker, manager or owner',
-    modalCommand: true,
+    noDefer: true,
     run: async ({ interaction, client }) => {
         if (!interaction.guild) return;
         const user: any = await db.findLoggedIn(interaction.user.id as string);

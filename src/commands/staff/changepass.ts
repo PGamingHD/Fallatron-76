@@ -15,7 +15,7 @@ import * as argon2 from 'argon2';
 export default new Command({
     name: 'changepass',
     description: 'Change the password of an existing account',
-    modalCommand: true,
+    noDefer: true,
     options: [
         {
             type: ApplicationCommandOptionType.String,

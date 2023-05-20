@@ -13,7 +13,7 @@ import db from "../../utils/database";
 export default new Command({
     name: 'setmanager',
     description: 'Add manager permissions to a registered user',
-    modalCommand: true,
+    noDefer: true,
     options: [
         {
             type: ApplicationCommandOptionType.String,

@@ -8,7 +8,7 @@ import { client } from '../bot';
 import { Event } from '../structures/Event';
 import logger from '../utils/logger';
 import {Colours} from "../@types/Colours";
-import {CommandType, ModalType} from "../@types/Command";
+import {CommandType, MenuType, ModalType} from "../@types/Command";
 
 
 export default new Event(Events.InteractionCreate, async interaction => {
@@ -16,13 +16,11 @@ export default new Event(Events.InteractionCreate, async interaction => {
     if (interaction.isChatInputCommand()) {
         const command: CommandType | undefined = client.commands.get(interaction.commandName);
         if (!command) return interaction.followUp('You have used a non existent command');
+
         let bla: string;
-        if (command.modalCommand) bla = 'hey'
+        if (command.noDefer) bla = 'hey';
 
         else await interaction.deferReply();
-
-        if (command.ownerCommand) return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription(`You do not have access to this command, you require the permission \`OWNER\` to execute this command.`)]});
-        if (command.managerCommand) return interaction.reply({ephemeral: true, embeds: [new EmbedBuilder().setColor(Colours.RED).setDescription(`You do not have access to this command, you require the permission \`MANAGER\` to execute this command.`)]});
 
         try {
             await command.run({
@@ -37,7 +35,7 @@ export default new Event(Events.InteractionCreate, async interaction => {
 
     // Context Menu Commands
     else if (interaction.isMessageContextMenuCommand() || interaction.isUserContextMenuCommand()) {
-        const command = client.contextmenus.get(interaction.commandName);
+        const command: MenuType | undefined = client.contextmenus.get(interaction.commandName);
         if (!command) return interaction.followUp('You have used a non existent context menu');
         try {
             await command.run({

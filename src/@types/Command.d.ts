@@ -8,9 +8,17 @@ import {
     UserApplicationCommandData,
     UserContextMenuCommandInteraction,
     ModalSubmitInteraction,
-    ModalSubmitInteractionCollectorOptions, ModalSubmitFields,
+    ModalSubmitInteractionCollectorOptions,
+    ModalSubmitFields,
+    Message,
 } from 'discord.js';
 import { ExtendedClient } from '../structures/Client';
+
+interface TextOptions {
+    message: Message,
+    client: ExtendedClient,
+    args: any,
+}
 
 interface RunOptions {
     client: ExtendedClient;
@@ -30,14 +38,19 @@ interface ModalOptions {
     args: ModalSubmitFields;
 }
 
+type TextFunction = (options: TextOptions) => any;
 type RunFunction = (options: RunOptions) => any;
 type MenuFunction = (options: MenuOptions) => any;
 type ModalFunction = (options: ModalOptions) => any;
 
+export type TextType = {
+    name: string;
+    run: TextFunction;
+    hidden?: boolean,
+} & MessageApplicationCommandData;
+
 export type CommandType = {
-    ownerCommand?: boolean;
-    managerCommand?: boolean;
-    modalCommand?: boolean;
+    noDefer?: boolean;
     userPermissions?: PermissionResolvable[];
     main?: boolean;
     run: RunFunction;

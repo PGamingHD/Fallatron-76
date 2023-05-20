@@ -13,7 +13,7 @@ import {user} from "@prisma/client";
 export default new Command({
     name: 'setowner',
     description: 'Add owner permissions to a registered user',
-    modalCommand: true,
+    noDefer: true,
     options: [
         {
             type: ApplicationCommandOptionType.String,

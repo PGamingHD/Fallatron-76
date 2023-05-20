@@ -32,7 +32,7 @@ import db from "../../utils/database";
 export default new Command({
     name: 'listjobs',
     description: 'List all jobs, no matter if claimed or completed (HEAVY)',
-    modalCommand: true,
+    noDefer: true,
     run: async ({ interaction, client }) => {
         if (!interaction.guild) return;
         const user: any = await db.findLoggedIn(interaction.user.id as string);

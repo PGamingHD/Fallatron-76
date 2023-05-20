@@ -13,7 +13,7 @@ import { Command } from '../../structures/Command';
 export default new Command({
     name: 'register',
     description: 'Register an account to use on our services',
-    modalCommand: true,
+    noDefer: true,
     run: async ({ interaction, client }) => {
         const modal: ModalBuilder = new ModalBuilder().setCustomId('registerModal').setTitle('Register Account');
 

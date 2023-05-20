@@ -12,7 +12,6 @@ import db from "../../utils/database";
 
 export default new Modal({
     customId: 'editModal',
-
     run: async ({interaction, client, args}) => {
         const username: string = args.getTextInputValue('editUser');
         const password: string = args.getTextInputValue('editPass');
